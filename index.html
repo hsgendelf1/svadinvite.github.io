@@ -1041,6 +1041,7 @@
         // Глобальная переменная для отслеживания состояния
         let isOpened = false;
         let autoOpenTimer = null;
+        let isCopied = false;
 
         function openEnvelope() {
             if (isOpened) return;
@@ -1141,6 +1142,7 @@
             if (music) text += 'Музыка: ' + music + '\n';
 
             document.getElementById('composedText').value = text.trim();
+            isCopied = false;
         }
 
         function copyText() {
@@ -1151,6 +1153,7 @@
             }
             text.select();
             document.execCommand('copy');
+            isCopied = true;
             alert('Текст скопирован в буфер обмена!');
         }
 
@@ -1158,6 +1161,10 @@
             const text = document.getElementById('composedText');
             if (!text.value) {
                 alert('Заполните анкету перед отправкой');
+                return;
+            }
+            if (!isCopied) {
+                alert('Сначала необходимо скопировать анкету!');
                 return;
             }
             document.getElementById('modalOverlay').classList.add('visible');
