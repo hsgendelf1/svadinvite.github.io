@@ -748,6 +748,125 @@
             padding: 1rem 2.5rem;
             width: auto;
         }
+
+        /* ===== Рассадка (модальное окно) ===== */
+        .seating-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 1rem;
+        }
+        .seating-overlay.visible { display: flex; }
+        .seating-window {
+            background: #f4f1ec;
+            border-radius: 14px;
+            max-width: 1120px;
+            width: 100%;
+            max-height: 94vh;
+            overflow: auto;
+            padding: 22px;
+            position: relative;
+        }
+        .seating-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            line-height: 1;
+            color: #4a3f35;
+            cursor: pointer;
+        }
+        .seating-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: .05em;
+            color: #4a3f35;
+            text-align: center;
+            margin: 0 0 16px;
+        }
+        .seating-layout { display: flex; gap: 18px; align-items: flex-start; }
+        .seating-layout .plan {
+            flex: 1 1 auto;
+            min-width: 0;
+            background: #fff;
+            border: 1px solid #e2dbcf;
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .seating-layout .plan svg { width: 100%; height: auto; display: block; }
+        .seating-aside { width: 300px; flex: 0 0 300px; }
+        .seating-layout .controls {
+            background: #fff;
+            border: 1px solid #e2dbcf;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .seating-layout .controls label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+        .seating-layout .controls input { accent-color: #a349a4; width: 16px; height: 16px; }
+        .seating-layout .controls button {
+            border: 1px solid #d8cfc0;
+            background: #fff;
+            border-radius: 7px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .seating-layout .controls button:hover { background: #f2ede5; }
+        .seating-layout .card {
+            background: #fff;
+            border: 1px solid #e2dbcf;
+            border-left: 6px solid var(--c, #ccc);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(60,45,25,.06);
+            cursor: pointer;
+            transition: box-shadow .15s, transform .15s;
+        }
+        .seating-layout .card:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(60,45,25,.12); }
+        .seating-layout .card.active { box-shadow: 0 0 0 2px var(--c, #ccc); }
+        .seating-layout .card h3 { margin: 0 0 2px; font-size: 16px; color: #3d342a; }
+        .seating-layout .card .count { font-size: 12px; color: #9a9187; margin-bottom: 6px; }
+        .seating-layout .card ul { margin: 0; padding: 0; list-style: none; }
+        .seating-layout .card li { padding: 3px 8px; border-radius: 5px; font-size: 14px; transition: background .1s; }
+        .seating-layout .card li:hover { background: #f2ede5; }
+        .seating-layout .card li.active { background: #eae0d0; font-weight: 600; }
+        .map-btn { font-family: 'Montserrat', sans-serif; cursor: pointer; }
+        #tooltip {
+            position: fixed;
+            pointer-events: none;
+            background: #20242e;
+            color: #fff;
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.3);
+            opacity: 0;
+            transition: opacity .12s;
+            z-index: 4000;
+            white-space: nowrap;
+        }
+        #tooltip .tt-sub { color: #c9c2b8; font-size: 11px; margin-top: 1px; }
+        .name-label { pointer-events: none; }
+        @media (max-width: 800px) {
+            .seating-layout { flex-direction: column; }
+            .seating-aside { width: 100%; flex: auto; }
+        }
     </style>
 </head>
 <body>
@@ -923,6 +1042,8 @@
                 </div>
                 
                 <a href="https://yandex.ru/maps/?text=Красноярск+ул.+Вильского+22+стр+4" target="_blank" class="map-btn">Построить маршрут</a>
+
+                <button type="button" class="map-btn" style="margin-left:0.5rem;" onclick="openSeats()">МЕСТА</button>
             </div>
         </section>
 
@@ -1027,6 +1148,27 @@
         </div>
 
     </div>
+
+    <!-- Модальное окно: рассадка гостей -->
+    <div class="seating-overlay" id="seatingOverlay" onclick="closeSeats(event)">
+        <div class="seating-window">
+            <button class="seating-close" onclick="closeSeats()" aria-label="Закрыть">×</button>
+            <h2 class="seating-title">Рассадка гостей</h2>
+            <div class="seating-layout">
+                <div class="plan">
+                    <svg id="plan" viewBox="0 0 1152 648" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+                <aside class="seating-aside">
+                    <div class="controls">
+                        <label><input type="checkbox" id="showNames"> Показывать имена на схеме</label>
+                        <button id="clearBtn" title="Сбросить подсветку">Сброс</button>
+                    </div>
+                    <div id="cards"></div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <div id="tooltip"></div>
 
     <!-- Модальное окно -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
@@ -1173,6 +1315,270 @@
         function closeModal(e) {
             if (e && e.target !== document.getElementById('modalOverlay')) return;
             document.getElementById('modalOverlay').classList.remove('visible');
+        }
+    </script>
+
+    <script>
+        (function () {
+            const NS = "http://www.w3.org/2000/svg";
+            const svg = document.getElementById("plan");
+            const tooltip = document.getElementById("tooltip");
+            const seats = [];
+            let selectedSeat = null;
+            let highlightedTable = null;
+
+            const DARK = "#1a1c22";
+            const HALL = { x: 159, y: 40, w: 568, h: 582 };
+            const SEAT_R = 85;
+            const TABLE_R = 57;
+
+            const TABLES = [
+                { label: "Стол №1", color: "#99d9ea", cx: 589.5, cy: 136,
+                  guests: ["Ольга Шевченко","Алексей Шевченко","Андрей Елин","Дарья Елина","Аркадий Шевченко"] },
+                { label: "Стол №2", color: "#a349a4", cx: 631, cy: 330,
+                  guests: ["Диана Шлектицовас","Даниил Шевченко","Григорий Дементьев","София Дементьева","Ирина Сердюкова"] },
+                { label: "Стол №3", color: "#22b14c", cx: 431.5, cy: 304.5,
+                  guests: ["Галина Кононова","Лариса Кологреева","Сергей Кологреев","Юрий Соловьев","Анна Соловьева","Александра Кононова","Олеся Дидух"] },
+                { label: "Стол №4", color: "#ed1c24", cx: 257, cy: 409.5,
+                  guests: ["Галина Елина","Татьяна Шевченко","Сергей Никулин","Александр Елин","Светлана Елина","Евгений Екунчихин"] }
+            ];
+            const PRESIDIUM = { label: "Президиум", color: "#efe4b0", cx: 262, cy: 130,
+                guests: ["София Панина","Невеста","Жених","Владислав Пережогин"],
+                seats: [[200,189],[239,152],[278,115],[318,78]] };
+
+            function el(name, attrs) {
+                const e = document.createElementNS(NS, name);
+                for (const k in attrs) e.setAttribute(k, attrs[k]);
+                return e;
+            }
+
+            function shortName(full) {
+                const parts = full.trim().split(/\s+/);
+                if (parts.length < 2) return full;
+                return parts[0] + " " + parts[1].charAt(0) + ".";
+            }
+
+            function buildPlan() {
+                svg.appendChild(el("rect", { x: 0, y: 0, width: 1152, height: 648, fill: "#ffffff" }));
+                svg.appendChild(el("rect", { x: HALL.x, y: HALL.y, width: HALL.w, height: HALL.h,
+                    rx: 16, fill: DARK }));
+
+                const decor = [
+                    { x: 197, y: 542, w: 40, h: 39, f: "#b97a57" },
+                    { x: 498, y: 540, w: 40, h: 39, f: "#b97a57" },
+                    { x: 687, y: 565, w: 36, h: 52, f: "#c3c3c3" }
+                ];
+                decor.forEach(d => svg.appendChild(el("rect", { x: d.x, y: d.y, width: d.w, height: d.h, rx: 5, fill: d.f, opacity: 0.85 })));
+
+                const band = el("rect", { x: -127, y: -16, width: 254, height: 32, rx: 16,
+                    fill: "#f4f4f4", stroke: "#dcdcdc",
+                    transform: "translate(290.5,164) rotate(-43.3)" });
+                svg.appendChild(band);
+
+                const pt = svg.appendChild(el("text", { x: 262, y: 58, "text-anchor": "middle",
+                    fill: "rgba(255,255,255,0.8)", "font-size": 13, "letter-spacing": 3,
+                    "font-family": "Georgia, serif" }));
+                pt.textContent = "ПРЕЗИДИУМ";
+
+                TABLES.forEach((t, ti) => {
+                    const g = svg.appendChild(el("g"));
+                    const ring = el("circle", { cx: t.cx, cy: t.cy, r: SEAT_R,
+                        fill: "none", stroke: "rgba(255,255,255,0.12)", "stroke-width": 1 });
+                    g.appendChild(ring);
+                    const circle = el("circle", { cx: t.cx, cy: t.cy, r: TABLE_R, fill: "#fdfdfd",
+                        stroke: "#d5d5d5", "stroke-width": 1.5 });
+                    g.appendChild(circle);
+                    const num = el("text", { x: t.cx, y: t.cy + 5, "text-anchor": "middle",
+                        fill: "#3d342a", "font-size": 15, "font-weight": 700 });
+                    num.textContent = t.label;
+                    g.appendChild(num);
+
+                    const n = t.guests.length;
+                    t.guests.forEach((name, si) => {
+                        const a = (si / n) * 2 * Math.PI - Math.PI / 2;
+                        const sx = t.cx + SEAT_R * Math.cos(a);
+                        const sy = t.cy + SEAT_R * Math.sin(a);
+                        const dot = el("circle", { cx: sx, cy: sy, r: 11, fill: t.color,
+                            stroke: "rgba(0,0,0,0.45)", "stroke-width": 1.4, cursor: "pointer" });
+                        dot.addEventListener("mouseenter", e => { showTip(e, name, t.label); dot.setAttribute("r", 13.5); dot.setAttribute("stroke", "#ffffff"); });
+                        dot.addEventListener("mousemove", e => showTip(e, name, t.label));
+                        dot.addEventListener("mouseleave", () => { if (!isActive(ti, si)) { dot.setAttribute("r", 11); dot.setAttribute("stroke", "rgba(0,0,0,0.45)"); } hideTip(); });
+                        dot.addEventListener("click", () => selectSeat(ti, si));
+                        g.appendChild(dot);
+                        seats.push({ ti, si, el: dot, name, table: t, x: sx, y: sy });
+
+                        const lab = el("text", { class: "name-label", visibility: "hidden",
+                            "text-anchor": "middle", "font-size": 11.5, fill: "#f2f2f2",
+                            stroke: DARK, "stroke-width": 2.6, "paint-order": "stroke" });
+                        lab.setAttribute("x", sx.toFixed(1));
+                        lab.setAttribute("y", sy.toFixed(1));
+                        lab.textContent = shortName(name);
+                        g.appendChild(lab);
+                    });
+                });
+
+                PRESIDIUM.seats.forEach((s, i) => {
+                    const name = PRESIDIUM.guests[i];
+                    const dot = el("circle", { cx: s[0], cy: s[1], r: 10, fill: PRESIDIUM.color,
+                        stroke: "rgba(0,0,0,0.45)", "stroke-width": 1.4, cursor: "pointer" });
+                    dot.addEventListener("mouseenter", e => { showTip(e, name, "Президиум"); });
+                    dot.addEventListener("mousemove", e => showTip(e, name, "Президиум"));
+                    dot.addEventListener("mouseleave", hideTip);
+                    dot.addEventListener("click", () => selectSeat(-1, i));
+                    svg.appendChild(dot);
+                    seats.push({ ti: -1, si: i, el: dot, name, table: PRESIDIUM, x: s[0], y: s[1] });
+
+                    const plab = el("text", { class: "name-label", visibility: "hidden",
+                        "text-anchor": "middle", "font-size": 11.5, fill: "#f2f2f2",
+                        stroke: DARK, "stroke-width": 2.6, "paint-order": "stroke" });
+                    plab.setAttribute("x", s[0]);
+                    plab.setAttribute("y", s[1]);
+                    plab.textContent = shortName(name);
+                    svg.appendChild(plab);
+                });
+
+                svg.querySelectorAll(".name-label").forEach(l => {
+                    let w = 0;
+                    try { w = l.getComputedTextLength(); } catch (e) { w = 0; }
+                    if (!(w > 0)) w = l.textContent.length * 6.2;
+                    const minX = HALL.x + w / 2 + 4;
+                    const maxX = HALL.x + HALL.w - w / 2 - 4;
+                    let x = parseFloat(l.getAttribute("x")) || 0;
+                    if (x < minX) x = minX;
+                    if (x > maxX) x = maxX;
+                    l.setAttribute("x", x.toFixed(1));
+                    let y = parseFloat(l.getAttribute("y")) || 0;
+                    if (y < HALL.y + 9) y = HALL.y + 9;
+                    if (y > HALL.y + HALL.h - 5) y = HALL.y + HALL.h - 5;
+                    l.setAttribute("y", y.toFixed(1));
+                });
+            }
+
+            function isActive(ti, si) {
+                return (selectedSeat && selectedSeat.ti === ti && selectedSeat.si === si);
+            }
+
+            function showTip(e, title, sub) {
+                tooltip.innerHTML = title + '<div class="tt-sub">' + sub + '</div>';
+                tooltip.style.opacity = 1;
+                tooltip.style.left = (e.clientX + 16) + "px";
+                tooltip.style.top = (e.clientY + 12) + "px";
+            }
+
+            function hideTip() { tooltip.style.opacity = 0; }
+
+            function applyTableDim() {
+                seats.forEach(s => {
+                    const dim = highlightedTable !== null && s.ti !== highlightedTable;
+                    s.el.setAttribute("opacity", dim ? 0.25 : 1);
+                });
+            }
+
+            function selectSeat(ti, si) {
+                if (selectedSeat) {
+                    selectedSeat.el.setAttribute("r", selectedSeat.ti === -1 ? 10 : 11);
+                    selectedSeat.el.setAttribute("stroke", "rgba(0,0,0,0.45)");
+                    selectedSeat.el.classList.remove("seat-active");
+                }
+                const s = seats.find(z => z.ti === ti && z.si === si);
+                selectedSeat = s;
+                if (!s) return;
+                s.el.setAttribute("r", 14);
+                s.el.setAttribute("stroke", "#ffffff");
+                s.el.classList.add("seat-active");
+                if (s.ti >= 0) {
+                    const card = document.getElementById("card-" + s.ti);
+                    if (card) {
+                        if (card.scrollIntoView) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                        setCardActive(s.ti);
+                        const lis = card.querySelectorAll("li");
+                        lis.forEach((li, i) => li.classList.toggle("active", i === s.si));
+                    }
+                }
+            }
+
+            function setCardActive(ti) {
+                document.querySelectorAll(".card").forEach((c, i) => c.classList.toggle("active", i === ti));
+            }
+
+            function clearAll() {
+                if (selectedSeat) {
+                    selectedSeat.el.setAttribute("r", selectedSeat.ti === -1 ? 10 : 11);
+                    selectedSeat.el.setAttribute("stroke", "rgba(0,0,0,0.45)");
+                    selectedSeat.el.classList.remove("seat-active");
+                    selectedSeat = null;
+                }
+                highlightedTable = null;
+                document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+                document.querySelectorAll(".card li").forEach(li => li.classList.remove("active"));
+                applyTableDim();
+            }
+
+            function buildCards() {
+                const wrap = document.getElementById("cards");
+                TABLES.forEach((t, ti) => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.id = "card-" + ti;
+                    card.style.setProperty("--c", t.color);
+                    const h = document.createElement("h3");
+                    h.textContent = t.label;
+                    const count = document.createElement("div");
+                    count.className = "count";
+                    count.textContent = t.guests.length + " гостей";
+                    const ul = document.createElement("ul");
+                    t.guests.forEach((name, si) => {
+                        const li = document.createElement("li");
+                        li.textContent = name;
+                        li.addEventListener("click", ev => { ev.stopPropagation(); selectSeat(ti, si); });
+                        ul.appendChild(li);
+                    });
+                    card.appendChild(h); card.appendChild(count); card.appendChild(ul);
+                    card.addEventListener("mouseenter", () => { highlightedTable = ti; applyTableDim(); });
+                    card.addEventListener("mouseleave", () => { highlightedTable = null; applyTableDim(); });
+                    card.addEventListener("click", () => {
+                        setCardActive(ti);
+                        highlightedTable = null;
+                        applyTableDim();
+                    });
+                    wrap.appendChild(card);
+                });
+
+                const pc = document.createElement("div");
+                pc.className = "card";
+                pc.style.setProperty("--c", PRESIDIUM.color);
+                const ph = document.createElement("h3");
+                ph.textContent = PRESIDIUM.label;
+                const pcount = document.createElement("div");
+                pcount.className = "count";
+                pcount.textContent = "Слева направо";
+                const pul = document.createElement("ul");
+                PRESIDIUM.guests.forEach((name, i) => {
+                    const li = document.createElement("li");
+                    li.textContent = name;
+                    li.addEventListener("click", ev => { ev.stopPropagation(); selectSeat(-1, i); });
+                    pul.appendChild(li);
+                });
+                pc.appendChild(ph); pc.appendChild(pcount); pc.appendChild(pul);
+                wrap.appendChild(pc);
+            }
+
+            document.getElementById("showNames").addEventListener("change", e => {
+                document.querySelectorAll(".name-label").forEach(n => n.setAttribute("visibility", e.target.checked ? "visible" : "hidden"));
+            });
+            document.getElementById("clearBtn").addEventListener("click", clearAll);
+            svg.addEventListener("mouseleave", hideTip);
+
+            buildPlan();
+            buildCards();
+        })();
+
+        function openSeats() {
+            document.getElementById('seatingOverlay').classList.add('visible');
+        }
+        function closeSeats(e) {
+            if (e && e.target !== document.getElementById('seatingOverlay')) return;
+            document.getElementById('seatingOverlay').classList.remove('visible');
         }
     </script>
 
