@@ -864,8 +864,19 @@
         #tooltip .tt-sub { color: #c9c2b8; font-size: 11px; margin-top: 1px; }
         .name-label { pointer-events: none; }
         @media (max-width: 800px) {
+            .seating-overlay { padding: 0; }
+            .seating-window {
+                max-height: 100vh;
+                height: 100vh;
+                height: 100dvh;
+                border-radius: 0;
+                padding: 12px;
+            }
             .seating-layout { flex-direction: column; }
             .seating-aside { width: 100%; flex: auto; }
+            .seating-layout .plan { padding: 6px; }
+            .seating-title { font-size: 1.4rem; margin: 0 0 10px; }
+            .seating-layout .controls { margin-bottom: 10px; }
         }
     </style>
 </head>
