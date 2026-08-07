@@ -137,6 +137,111 @@
             50% { opacity: 1; }
         }
 
+        /* Праздничные эффекты (за 6 часов до свадьбы) */
+        #festive-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            border-radius: 2px;
+            opacity: 0.9;
+            animation-name: confetti-fall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            will-change: transform;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0.9;
+            }
+        }
+
+        .sparkle-piece {
+            position: absolute;
+            font-size: 1.4rem;
+            animation-name: sparkle-fade;
+            animation-timing-function: ease-out;
+            animation-iteration-count: 1;
+        }
+
+        @keyframes sparkle-fade {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            30% { transform: scale(1.2) rotate(80deg); opacity: 1; }
+            100% { transform: scale(0.6) rotate(180deg); opacity: 0; }
+        }
+
+        /* Красные прыгающие таймеры (за 1 час до свадьбы) */
+        #red-timers-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .mini-red-timer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #b3231c;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            border-radius: 20px;
+            box-shadow: 0 4px 14px rgba(179,35,28,0.5);
+            white-space: nowrap;
+            animation: red-timer-pulse 0.8s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes red-timer-pulse {
+            0%, 100% { box-shadow: 0 4px 14px rgba(179,35,28,0.5); }
+            50% { box-shadow: 0 4px 22px rgba(179,35,28,0.9); }
+        }
+
+        /* Отладочные кнопки */
+        #debug-panel {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 10000;
+        }
+
+        .debug-btn {
+            background: var(--coffee-dark);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            opacity: 0.75;
+        }
+
+        .debug-btn:active {
+            opacity: 1;
+        }
+
         /* Прогресс-бар таймера */
         .timer-bar {
             width: 200px;
@@ -878,6 +983,200 @@
             .seating-title { font-size: 1.4rem; margin: 0 0 10px; }
             .seating-layout .controls { margin-bottom: 10px; }
         }
+
+        /* Скрытие контента после события */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Подсветка кнопки "МЕСТА" после события */
+        .highlight-btn {
+            animation: glow 1.5s ease-in-out infinite;
+            border: 3px solid #ff4444 !important;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #b3231c !important;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 68, 68, 0.9); }
+        }
+
+        /* ===== Баннер после события (заменяет конверт) ===== */
+        #post-event-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--cream);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            padding: 2rem;
+            overflow: hidden;
+            transition: opacity 0.6s ease;
+        }
+
+        #post-event-banner.visible {
+            display: flex;
+            animation: fadeInBanner 1.2s ease forwards;
+        }
+
+        #post-event-banner.closing {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInBanner {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .banner-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            max-width: 700px;
+            margin: 0.2rem 0;
+            position: relative;
+            min-height: 5rem;
+        }
+
+        .banner-word {
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: #3d342a;
+            opacity: 0;
+            transition: opacity 1.2s ease, transform 1.2s ease;
+            white-space: nowrap;
+        }
+
+        .banner-word.show {
+            opacity: 1;
+        }
+
+        .banner-word.left {
+            transform: translateX(-30px);
+        }
+        .banner-word.left.show {
+            transform: translateX(0);
+        }
+
+        .banner-word.right {
+            transform: translateX(30px);
+        }
+        .banner-word.right.show {
+            transform: translateX(0);
+        }
+
+        .banner-word .strike {
+            text-decoration: line-through;
+            text-decoration-color: #b3231c;
+            text-decoration-thickness: 3px;
+        }
+
+        .banner-word .new-suffix {
+            color: #b3231c;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .banner-word .new-suffix.show {
+            opacity: 1;
+        }
+
+        /* Анимация вытеснения */
+        .banner-word.push-out {
+            animation: pushOut 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes pushOut {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-120%); opacity: 0; }
+        }
+
+        /* Нижняя строка с Соловьевы (по центру) */
+        #banner-bottom {
+            margin-top: 0.5rem;
+            min-height: 5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #banner-bottom .banner-word {
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-weight: 700;
+            color: #b3231c;
+            opacity: 0;
+            transition: opacity 1.5s ease, transform 0.8s ease;
+            transform: scale(0.9);
+        }
+
+        #banner-bottom .banner-word.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Крестик закрытия */
+        #banner-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #3d342a;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.6s ease, transform 0.3s ease;
+            z-index: 10;
+            line-height: 1;
+            font-family: 'Montserrat', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #banner-close.show {
+            opacity: 0.6;
+        }
+
+        #banner-close:hover,
+        #banner-close:active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* Убираем конверт, когда показываем баннер */
+        #envelopeContainer.hidden-banner {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .banner-row {
+                gap: 1rem;
+                min-height: 3.5rem;
+            }
+            .banner-word {
+                font-size: 1.8rem;
+            }
+            #banner-bottom .banner-word {
+                font-size: 1.8rem;
+            }
+            #banner-close {
+                font-size: 2.5rem;
+                top: 10px;
+                right: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -892,6 +1191,29 @@
         <div class="tap-text">Открывается автоматически...</div>
         <div class="timer-bar">
             <div class="timer-progress"></div>
+        </div>
+    </div>
+
+    <!-- Баннер после события (заменяет конверт) -->
+    <div id="post-event-banner">
+        <!-- Крестик закрытия -->
+        <div id="banner-close" onclick="closeBanner()">✕</div>
+
+        <!-- Первая строка: Екатерина + Михаил -->
+        <div class="banner-row">
+            <span class="banner-word left" id="word-ekaterina">Екатерина</span>
+            <span class="banner-word right" id="word-mikhail">Михаил</span>
+        </div>
+
+        <!-- Вторая строка (изначально Елина, потом Соловьевы вытесняют) -->
+        <div class="banner-row" id="banner-row-2">
+            <span class="banner-word left" id="word-elina">Елина</span>
+            <span class="banner-word right" id="word-soloviev">Соловьев<span class="new-suffix" id="suffix-y">ы</span></span>
+        </div>
+
+        <!-- Нижняя строка: Соловьевы (финальный центр) -->
+        <div id="banner-bottom">
+            <span class="banner-word" id="word-solovievy">!</span>
         </div>
     </div>
 
@@ -1012,7 +1334,7 @@
             </div>
         </section>
 
-        <!-- Место проведения -->
+        <!-- Место проведения (ЗАГС) -->
         <section class="map-section">
             <div class="fade-in">
                 <h2 class="section-title">Ждём вас<br>по адресу</h2>
@@ -1034,8 +1356,8 @@
             </div>
         </section>
 
-        <!-- Ресторан -->
-        <section class="map-section">
+        <!-- Свадебный банкет (оставляем после события) -->
+        <section class="map-section" id="banquet-section">
             <div class="fade-in">
                 <h2 class="section-title">Свадебный банкет</h2>
                 <p class="invitation-text">
@@ -1054,7 +1376,7 @@
                 
                 <a href="https://yandex.ru/maps/?text=Красноярск+ул.+Вильского+22+стр+4" target="_blank" class="map-btn">Построить маршрут</a>
 
-                <button type="button" class="map-btn" style="margin-left:0.5rem;" onclick="openSeats()">МЕСТА</button>
+                <button type="button" class="map-btn" id="seating-btn" style="margin-left:0.5rem;" onclick="openSeats()">МЕСТА</button>
             </div>
         </section>
 
@@ -1256,7 +1578,7 @@
         // Обратный отсчёт
         function updateCountdown() {
             const weddingDate = new Date('2026-08-08T12:00:00');
-            const now = new Date();
+            const now = new Date(Date.now() + debugOffsetMs);
             const diff = weddingDate - now;
 
             if (diff > 0) {
@@ -1591,6 +1913,313 @@
             if (e && e.target !== document.getElementById('seatingOverlay')) return;
             document.getElementById('seatingOverlay').classList.remove('visible');
         }
+    </script>
+
+    <div id="festive-container"></div>
+    <div id="red-timers-container"></div>
+
+    <script>
+        // ===== Праздничные эффекты и красные таймеры (DVD-движение) =====
+        let debugOffsetMs = 0;
+        let festiveActive = false;
+        let redTimersActive = false;
+        let festiveIntervalId = null;
+        let eventPassed = false;
+        let bannerShown = false;
+
+        // Данные для красных таймеров (DVD-движение)
+        let redTimersData = [];
+        let redTimersAnimationId = null;
+
+        function getRemainingMs() {
+            const weddingDate = new Date('2026-08-08T12:00:00');
+            const now = new Date(Date.now() + debugOffsetMs);
+            return weddingDate - now;
+        }
+
+        // Праздничные эффекты: конфетти и блёстки
+        const confettiColors = ['#c9a86a', '#8b7355', '#f0ebe5', '#d4af37', '#ffffff', '#a89080'];
+        const sparkleEmojis = ['✨', '🎉', '💫', '⭐'];
+
+        function spawnConfettiPiece() {
+            const container = document.getElementById('festive-container');
+            if (!container) return;
+            const piece = document.createElement('div');
+            const useSparkle = Math.random() < 0.25;
+            const left = Math.random() * 100;
+            const duration = 4 + Math.random() * 3;
+
+            if (useSparkle) {
+                piece.className = 'sparkle-piece';
+                piece.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
+                piece.style.left = left + 'vw';
+                piece.style.top = (Math.random() * 90) + 'vh';
+                piece.style.animationDuration = (1.5 + Math.random()) + 's';
+            } else {
+                piece.className = 'confetti-piece';
+                const size = 6 + Math.random() * 6;
+                piece.style.width = size + 'px';
+                piece.style.height = (size * 0.4) + 'px';
+                piece.style.left = left + 'vw';
+                piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                piece.style.animationDuration = duration + 's';
+            }
+
+            container.appendChild(piece);
+            piece.addEventListener('animationend', () => piece.remove());
+        }
+
+        function startFestiveEffects() {
+            if (festiveActive) return;
+            festiveActive = true;
+            festiveIntervalId = setInterval(spawnConfettiPiece, 250);
+        }
+
+        // Красные таймеры (DVD-движение)
+        function createMiniTimer() {
+            const container = document.getElementById('red-timers-container');
+            if (!container) return null;
+            const el = document.createElement('div');
+            el.className = 'mini-red-timer';
+            container.appendChild(el);
+
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 40;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            const angle = Math.random() * 2 * Math.PI;
+            const speed = 1.5 + Math.random() * 1.5;
+            const dx = Math.cos(angle) * speed;
+            const dy = Math.sin(angle) * speed;
+
+            return { el, x, y, dx, dy };
+        }
+
+        function startRedTimers() {
+            if (redTimersActive) return;
+            redTimersActive = true;
+            const count = 10;
+            for (let i = 0; i < count; i++) {
+                const timer = createMiniTimer();
+                if (timer) redTimersData.push(timer);
+            }
+
+            function animate() {
+                if (!redTimersActive) {
+                    redTimersAnimationId = null;
+                    return;
+                }
+                updateRedTimers();
+                redTimersAnimationId = requestAnimationFrame(animate);
+            }
+            animate();
+
+            setInterval(() => {
+                if (redTimersActive) updateRedTimersText();
+            }, 1000);
+        }
+
+        function updateRedTimers() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const padding = 40;
+            redTimersData.forEach(t => {
+                t.x += t.dx;
+                t.y += t.dy;
+                if (t.x < padding) { t.x = padding; t.dx = -t.dx; }
+                if (t.x > w - padding) { t.x = w - padding; t.dx = -t.dx; }
+                if (t.y < padding) { t.y = padding; t.dy = -t.dy; }
+                if (t.y > h - padding) { t.y = h - padding; t.dy = -t.dy; }
+                t.el.style.transform = 'translate(' + t.x + 'px, ' + t.y + 'px)';
+            });
+        }
+
+        function updateRedTimersText() {
+            const remainingMs = getRemainingMs();
+            const totalSeconds = Math.max(Math.floor(remainingMs / 1000), 0);
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            const text = '⏰ ' + h.toString().padStart(2, '0') + ':' +
+                m.toString().padStart(2, '0') + ':' +
+                s.toString().padStart(2, '0');
+            redTimersData.forEach(t => { t.el.textContent = text; });
+        }
+
+        function stopRedTimers() {
+            redTimersActive = false;
+            if (redTimersAnimationId) {
+                cancelAnimationFrame(redTimersAnimationId);
+                redTimersAnimationId = null;
+            }
+            redTimersData.forEach(t => t.el.remove());
+            redTimersData = [];
+        }
+
+        // === Закрытие баннера ===
+        function closeBanner() {
+            const banner = document.getElementById('post-event-banner');
+            banner.classList.add('closing');
+            setTimeout(() => {
+                banner.classList.remove('visible', 'closing');
+                banner.style.display = 'none';
+                // Показываем контент под баннером (убираем скрытие)
+                document.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+                // Прокручиваем к банкетной секции
+                document.getElementById('banquet-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 600);
+        }
+
+        // === Сложная анимация баннера ===
+        function showPostEventBanner() {
+            if (bannerShown) return;
+            bannerShown = true;
+
+            // Скрываем конверт
+            document.getElementById('envelopeContainer').classList.add('hidden-banner');
+
+            // Показываем баннер
+            const banner = document.getElementById('post-event-banner');
+            banner.classList.add('visible');
+
+            // Получаем элементы
+            const ekaterina = document.getElementById('word-ekaterina');
+            const mikhail = document.getElementById('word-mikhail');
+            const elina = document.getElementById('word-elina');
+            const soloviev = document.getElementById('word-soloviev');
+            const suffixY = document.getElementById('suffix-y');
+            const solovievy = document.getElementById('word-solovievy');
+            const closeBtn = document.getElementById('banner-close');
+
+            // Шаг 1: Появляется Екатерина (0.5с)
+            setTimeout(() => {
+                ekaterina.classList.add('show');
+            }, 500);
+
+            // Шаг 2: Под ней появляется Елина (1.2с)
+            setTimeout(() => {
+                elina.classList.add('show');
+            }, 1200);
+
+            // Шаг 3: Справа появляется Михаил (2.2с)
+            setTimeout(() => {
+                mikhail.classList.add('show');
+            }, 2200);
+
+            // Шаг 4: Справа появляется Соловьев (3.2с)
+            setTimeout(() => {
+                soloviev.classList.add('show');
+            }, 3200);
+
+            // Шаг 5: Зачёркиваем Елину (4.5с)
+            setTimeout(() => {
+                elina.innerHTML = '<span class="strike">Елина</span>';
+            }, 4500);
+
+            // Шаг 6: Соловьев вытесняет Елину влево (6.0с)
+            setTimeout(() => {
+                elina.classList.add('push-out');
+                soloviev.style.transition = 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                soloviev.style.transform = 'translateX(-2rem)';
+            }, 6000);
+
+            // Шаг 7: Появляется буква "ы" (7.8с)
+            setTimeout(() => {
+                suffixY.classList.add('show');
+            }, 7800);
+
+            // Шаг 8: Соловьевы появляются снизу по центру (9.0с)
+            setTimeout(() => {
+                solovievy.classList.add('show');
+            }, 9000);
+
+            // Шаг 9: Появляется крестик закрытия (10.0с)
+            setTimeout(() => {
+                closeBtn.classList.add('show');
+            }, 10000);
+        }
+
+        // === Проверка наступления события ===
+        function checkEventPassed() {
+            const remainingMs = getRemainingMs();
+            if (remainingMs <= 0 && !eventPassed) {
+                eventPassed = true;
+
+                // Скрываем все секции, кроме банкетной
+                const mainContent = document.getElementById('mainContent');
+                const allSections = mainContent.querySelectorAll('section');
+                allSections.forEach(section => {
+                    if (section.id !== 'banquet-section') {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                // Скрываем футер
+                const footer = document.querySelector('.footer-section');
+                if (footer) footer.classList.add('hidden');
+
+                // Останавливаем эффекты
+                if (festiveActive) {
+                    festiveActive = false;
+                    if (festiveIntervalId) {
+                        clearInterval(festiveIntervalId);
+                        festiveIntervalId = null;
+                    }
+                    document.getElementById('festive-container').innerHTML = '';
+                }
+                if (redTimersActive) stopRedTimers();
+
+                // Показываем баннер с анимацией
+                showPostEventBanner();
+
+                // Выделяем кнопку "МЕСТА"
+                const seatBtn = document.getElementById('seating-btn');
+                if (seatBtn) {
+                    seatBtn.classList.add('highlight-btn');
+                }
+            }
+        }
+
+        // Основная проверка таймеров и эффектов
+        function checkSpecialTimers() {
+            const remainingMs = getRemainingMs();
+            const sixHoursMs = 6 * 60 * 60 * 1000;
+            const oneHourMs = 1 * 60 * 60 * 1000;
+
+            if (remainingMs > 0 && remainingMs <= sixHoursMs) {
+                startFestiveEffects();
+            } else {
+                if (festiveActive) {
+                    festiveActive = false;
+                    if (festiveIntervalId) {
+                        clearInterval(festiveIntervalId);
+                        festiveIntervalId = null;
+                    }
+                    document.getElementById('festive-container').innerHTML = '';
+                }
+            }
+
+            if (remainingMs > 0 && remainingMs <= oneHourMs) {
+                startRedTimers();
+            } else {
+                if (redTimersActive) stopRedTimers();
+            }
+
+            checkEventPassed();
+        }
+
+        setInterval(checkSpecialTimers, 1000);
+        checkSpecialTimers();
+
+        function debugShiftHours(hours) {
+            debugOffsetMs += hours * 60 * 60 * 1000;
+            updateCountdown();
+            checkSpecialTimers();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSpecialTimers();
+        });
     </script>
 
 </body>
